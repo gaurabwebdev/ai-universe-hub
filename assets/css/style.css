@@ -6,7 +6,7 @@
     height: 225px;
 }
 
-.arrow-btn{
+.arrow-btn, .modal-close-btn{
     cursor: pointer;
 }
 
