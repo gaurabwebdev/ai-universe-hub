@@ -14,4 +14,7 @@
     width: 200px !important;
 }
 
-
+.modal-close-btn {
+    top: -3% !important;
+    right: -1% !important;
+}

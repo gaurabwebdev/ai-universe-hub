@@ -1,5 +1,6 @@
 const loadTools = async (num) => {
     showSpinnerBtn(true);
+    showBtnFunc();
     const URL = `https://openapi.programming-hero.com/api/ai/tools`;
     try{
         const getTools = await fetch(URL);
@@ -11,7 +12,6 @@ const loadTools = async (num) => {
         }
     } catch (error) {
         console.log(error);
-        return alert ('Upps! Something Went Wrong. Please Try Again After Sometime.');
     }
 }
 
@@ -21,15 +21,16 @@ const displayTools = (tools) => {
         tools.forEach((tool) => {
             // console.log(tool);
             const {name, image, features, published_in, id} = tool;
+            // console.log(features);
             const singleCard = document.createElement('div');
             singleCard.classList.add('col', 'border-1');
             singleCard.innerHTML = `
                 <div class="card p-3">
                     <img class="rounded thumbnail-image" src="${image}" class="card-img-top" alt="tool-image">
-                    <div onload="showDefaultFeatures(${features})" class="card-body">
+                    <div class="card-body">
                         <h4 class="card-title">Features</h4>
-                        <ol class="card-text  features-list">
-                            
+                        <ol>
+                            ${generateFeatures(features)}
                         </ol>
                     </div>
                     <div class="card-footer d-flex justify-content-between align-items-center">
@@ -45,49 +46,57 @@ const displayTools = (tools) => {
                     </div>
                 </div>
             `;
-            showSpinnerBtn(false);
             cardContainer.appendChild(singleCard);
         })
+        showSpinnerBtn(false);
 }
 
-const showDefaultFeatures = (features) => {
-    console.log(features);
+const generateFeatures = (features) => {
+    let featuresContainer = '';
+    for (let i=0; i<features.length; i++){
+        featuresContainer += `
+            <li>${features[i]}</li>
+        `;
+    }
+    return featuresContainer;
 }
 
 const showSpinnerBtn = (status) =>{
     const spinner = document.getElementById('spinner');
-    const showAllBtn = document.getElementById('show-all-btn');
     const sortBtn = document.getElementById('sort-btn');
     if(status){
         spinner.classList.remove('d-none');
-        showAllBtn.classList.add('d-none');
         sortBtn.classList.add('d-none');
     } else {
         spinner.classList.add('d-none');
-        showAllBtn.classList.remove('d-none');
         sortBtn.classList.remove('d-none');
     }
+    
 }
 
+const showBtnFunc = () =>{
+    const showAllBtn = document.getElementById('show-all-btn');
+    showAllBtn.addEventListener('click', function(e){
+        e.target.remove();
+    })
+}
 
 const showToolModal = async (toolId) =>{
-    // console.log(toolId);
     const URL = `https://openapi.programming-hero.com/api/ai/tool/${toolId}`;
     try{
         const loadToolDetails = await fetch(URL);
         const data = await loadToolDetails.json();
         showModal(data.data);
     } catch (error) {
-        return alert('Something went wrong! Please try again later.');
+        console.log(error);
     }
 }
 
 
 const showModal = (data) =>{
-    console.log(data);
+    // console.log(data);
     const {image_link, input_output_examples, accuracy, description, pricing, features, integrations} = data;
-    const [firsInOut, secondInOut] = input_output_examples;
-    // console.log(image_link, input_output_examples, accuracy, description, pricing, features, integrations);
+    console.log(pricing);
     const modalBody = document.getElementById('modalBody');
     modalBody.innerHTML = `
         <span class="modal-close-btn position-absolute fs-4 top-0 end-0 z-1 bg-danger rounded-circle px-2" data-bs-toggle="modal" data-bs-target="#toolModal">
@@ -98,31 +107,22 @@ const showModal = (data) =>{
                 <div class="card border border-danger py-2 px-3 rounded bg-danger-subtle">
                     <h4>${description}</h4>
                     <div class="card-body">
-                        <div class="d-flex justify-content-evenly">
-                            <div class="d-flex flex-column text-center p-2 bg-body-tertiary rounded fw-bold text-success">
-                                <span>${pricing[0].price}</span>
-                                <span>${pricing[0].plan}</span>
-                            </div>
-                            <div class="d-flex flex-column text-center p-2 bg-body-tertiary rounded fw-bold text-warning">
-                                <span>${pricing[1].price}</span>
-                                <span>${pricing[1].plan}</span>
-                            </div>
-                            <div class="d-flex flex-column text-center p-2 bg-body-tertiary rounded fw-bold text-danger">
-                                <span>${pricing[2].price}</span>
-                                <span>${pricing[2].plan}</span>
+                        <div class="d-flex justify-content-around my-3">
+                            <div class="p-2 rounded text-center fw-bold d-flex gap-2">
+                                ${showPrices(pricing)}
                             </div>
                         </div>
                         <div class="d-flex justify-content-between align-items-start my-2">
                             <div>
                                 <ul class="modal-features">
                                     <h4>Features</h4>
-                                    
+                                    ${generateModalFeatures(features)}
                                 </ul>
                             </div>
                             <div>
                                 <ul class="modal-integrations">
                                     <h4>Integrations</h4>
-                                    
+                                    ${generateFeatures(integrations)}
                                 </ul>
                             </div>
                         </div>
@@ -133,11 +133,11 @@ const showModal = (data) =>{
                 <div class="card border py-2 px-3 rounded">
                     <div class="position-relative">
                         <img src="${image_link[1]?image_link[1]: image_link[0]}" class="card-img-top" alt="...">
-                        <span class="btn btn-danger position-absolute end-0 mt-2 me-2">${accuracy.score * 100}% Accuracy</span>
+                        ${showAccuracy(accuracy)}
+                        
                     </div>
                     <div class="card-body d-flex flex-column justify-content-center align-items-center text-center">
-                        <h5 class="card-title">${secondInOut.input?secondInOut.input:firsInOut.input || 'Can you give any example?'}</h5>
-                        <p class="card-text">${secondInOut.output?secondInOut.output:firsInOut.output || 'No! Not Yet! Take a break!!!'}</p>
+                        ${showInputOutput(input_output_examples)}
                     </div>
                 </div>
             </div>
@@ -145,14 +145,58 @@ const showModal = (data) =>{
     `;
 }
 
+const showAccuracy = (accuracy) => {
+    let accuracyField = '';
+    if(accuracy.score){
+        accuracyField += `
+            <span class="btn btn-danger position-absolute end-0 pt-2 pe-2 accuracy-btn">
+                ${accuracy.score * 100} % Accuracy
+            </span>
+        `;
+    }
+    return accuracyField;
+}
+
+const showInputOutput = (input_output_examples) => {
+    const [firstInputOutput, secondInputOutput] = input_output_examples;
+    let msgContainer = '';
+    if(firstInputOutput.input || secondInputOutput.input){
+        msgContainer += `
+            <div class="card-text">
+                <h4>${firstInputOutput.input || secondInputOutput.input?secondInputOutput.input: 'Can you give any example?'}</h4>
+                <p >${firstInputOutput.output || secondInputOutput.output?secondInputOutput.output:'No! Not Yet! Take a break!!!'}</p>
+            </div>
+        `;
+    }
+    return msgContainer;
+}
+
+const showPrices = (pricing) => {
+    console.log(pricing);
+    let pricingPlanContainer = '';
+    for(const package of pricing){
+        console.log(package);
+        pricingPlanContainer += `
+                <div class="bg-light-subtle p-2 rounded text-center fw-bold pricing-plans text-success">
+                    <p>${package.price?package.price:'Free Of Cost'}</p>
+                    <p>${package.plan}</p>
+                </div>
+        `;
+    }
+    return pricingPlanContainer;
+}
 
 
 
-{/* <li>${integrations[0]}</li>
-<li>${integrations[1]}</li>
-<li>${integrations[2]}</li> 
-<li>${features.feature_name}</li>*/}
 
-{/* <li>${features[0]}</li>
-<li>${features[1]}</li>
-<li>${features[2]}</li> */}
+const generateModalFeatures = (features) => {
+    const featureCollection = Object.values(features);
+    let modalFeaturesContainer = '';
+    for(let i = 0; i<featureCollection.length; i++){
+        modalFeaturesContainer += `
+            <li>${featureCollection[i].feature_name}</li>
+        `;
+    }
+    return modalFeaturesContainer;
+}
+
