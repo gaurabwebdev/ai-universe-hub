@@ -3,7 +3,11 @@
     Card CSS
 */
 div#cards-container .col .card {
-    height: 509px;
+    height: 500px;
+}
+
+.modal-card {
+    height: 450px !important;
 }
 
 .thumbnail-image{

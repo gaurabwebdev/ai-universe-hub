@@ -1,3 +1,4 @@
+let sortingTools = [];
 const loadTools = async (num) => {
     showSpinnerBtn(true);
     showBtnFunc();
@@ -8,6 +9,7 @@ const loadTools = async (num) => {
         if(num){
             displayTools(data.data.tools.slice(0,num));
         } else {
+            sortingTools = data.data.tools;
             displayTools(data.data.tools);
         }
     } catch (error) {
@@ -102,7 +104,7 @@ const showModal = (data) =>{
         </span>
         <div class="row row-cols-1 row-cols-md-2 g-4">
             <div class="col p-2 border-0 rounded">
-                <div class="card border border-danger py-2 px-3 rounded bg-danger-subtle">
+                <div class="card border border-danger py-2 px-3 rounded bg-danger-subtle modal-card">
                     <h4>${description}</h4>
                     <div class="card-body">
                         <div class="d-flex justify-content-around my-3">
@@ -151,7 +153,7 @@ const showModal = (data) =>{
                 </div>
             </div>
             <div class="col p-2 border-0 rounded">
-                <div class="card border py-2 px-3 rounded">
+                <div class="card border py-2 px-3 rounded modal-card">
                     <div class="position-relative">
                         <img src="${image_link[1]?image_link[1]: image_link[0]}" class="card-img-top" alt="...">
                         ${showAccuracy(accuracy)}
@@ -223,3 +225,14 @@ const generateModalFeatures = (features) => {
     return modalFeaturesContainer;
 }
 
+const sortCard = () =>{
+    const supportingTools = []
+    sortingTools.forEach((tool) => {
+        console.log(tool.published_in);
+        tool.published_in = new Date (tool.published_in);
+        supportingTools.push(tool);
+
+    });
+    sortingTools.sort((a,b) => a.published_in.getTime() - b.published_in.getTime());
+    displayTools(sortingTools);
+}
