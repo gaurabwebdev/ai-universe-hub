@@ -127,7 +127,7 @@ const showModal = (data) =>{
                                 </div>
                                 <div class="p-2 bg-light-subtle rounded d-flex flex-column justify-content-end align-items-center text-danger">
                                     <p>
-                                        ${pricing?pricing[2].price:'Free Of Cost'} 
+                                        ${pricing?pricing[2].price:'Contact Us For Pricing'} 
                                     </p>
                                     <p>
                                         ${pricing?pricing[2].plan:'Enterprise'}
