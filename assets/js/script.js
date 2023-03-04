@@ -7,6 +7,7 @@ const loadTools = async (num) => {
         const getTools = await fetch(URL);
         const data = await getTools.json();
         if(num){
+            sortingTools = data.data.tools.slice(0,num);
             displayTools(data.data.tools.slice(0,num));
         } else {
             sortingTools = data.data.tools;
@@ -94,7 +95,6 @@ const showToolModal = async (toolId) =>{
 
 
 const showModal = (data) =>{
-    // console.log(data);
     const {image_link, input_output_examples, accuracy, description, pricing, features, integrations} = data;
     console.log(pricing);
     const modalBody = document.getElementById('modalBody');
@@ -172,7 +172,7 @@ const showAccuracy = (accuracy) => {
     let accuracyField = '';
     if(accuracy.score){
         accuracyField += `
-            <span class="btn btn-danger position-absolute end-0 pt-2 pe-2 accuracy-btn">
+            <span class="btn btn-danger position-absolute end-0 me-2 mt-2 pt-2 pe-2 accuracy-btn">
                 ${accuracy.score * 100}% Accuracy
             </span>
         `;
@@ -233,6 +233,12 @@ const sortCard = () =>{
         supportingTools.push(tool);
 
     });
-    sortingTools.sort((a,b) => a.published_in.getTime() - b.published_in.getTime());
+    sortingTools.sort((a,b) => b.published_in.getTime() - a.published_in.getTime());
+    sortingTools.forEach((tool) => {
+        const year = new Date(tool.published_in).getFullYear();
+        const month = ("0" + (new Date(tool.published_in).getMonth()+1)).slice(-2);
+        const day = ("0" + new Date(tool.published_in).getDate()).slice(-2);
+        tool.published_in = `${day}/${month}/${year}`;
+    })
     displayTools(sortingTools);
 }
