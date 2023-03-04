@@ -2,6 +2,10 @@
 /* 
     Card CSS
 */
+div#cards-container .col .card {
+    height: 509px;
+}
+
 .thumbnail-image{
     height: 225px;
 }

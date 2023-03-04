@@ -19,9 +19,7 @@ const displayTools = (tools) => {
         const cardContainer = document.getElementById('cards-container');
         cardContainer.innerHTML = '';
         tools.forEach((tool) => {
-            // console.log(tool);
             const {name, image, features, published_in, id} = tool;
-            // console.log(features);
             const singleCard = document.createElement('div');
             singleCard.classList.add('col', 'border-1');
             singleCard.innerHTML = `
@@ -108,8 +106,31 @@ const showModal = (data) =>{
                     <h4>${description}</h4>
                     <div class="card-body">
                         <div class="d-flex justify-content-around my-3">
-                            <div class="p-2 rounded text-center fw-bold d-flex gap-2">
-                                ${showPrices(pricing)}
+                            <div class="p-2 rounded text-center fw-bold d-flex gap-2 fw-bold">
+                                <div class="p-2 bg-light-subtle rounded d-flex flex-column justify-content-end align-items-center text-success">
+                                    <p>
+                                       ${pricing?pricing[0].price:'Free Of Cost'} 
+                                    </p>
+                                    <p>
+                                        ${pricing?pricing[0].plan:'Basic'}
+                                    </p>
+                                </div>
+                                <div class="p-2 bg-light-subtle rounded d-flex flex-column justify-content-end align-items-center text-warning">
+                                    <p>
+                                        ${pricing?pricing[1].price:'Free Of Cost'} 
+                                    </p>
+                                    <p>
+                                        ${pricing?pricing[1].plan:'Pro'}
+                                    </p>
+                                </div>
+                                <div class="p-2 bg-light-subtle rounded d-flex flex-column justify-content-end align-items-center text-danger">
+                                    <p>
+                                        ${pricing?pricing[2].price:'Free Of Cost'} 
+                                    </p>
+                                    <p>
+                                        ${pricing?pricing[2].plan:'Enterprise'}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                         <div class="d-flex justify-content-between align-items-start my-2">
@@ -120,9 +141,9 @@ const showModal = (data) =>{
                                 </ul>
                             </div>
                             <div>
+                                <h4>Integrations</h4>
                                 <ul class="modal-integrations">
-                                    <h4>Integrations</h4>
-                                    ${generateFeatures(integrations)}
+                                    ${generateIntegrations(integrations)}
                                 </ul>
                             </div>
                         </div>
@@ -150,44 +171,46 @@ const showAccuracy = (accuracy) => {
     if(accuracy.score){
         accuracyField += `
             <span class="btn btn-danger position-absolute end-0 pt-2 pe-2 accuracy-btn">
-                ${accuracy.score * 100} % Accuracy
+                ${accuracy.score * 100}% Accuracy
             </span>
         `;
     }
     return accuracyField;
 }
 
+const generateIntegrations = (integrations) => {
+    console.log(integrations);
+    let integrationsContainer = '';
+    if(integrations){
+        integrations.forEach((integrationItem) => {
+            integrationsContainer += `
+            <li>${integrationItem}</li>
+        `;
+        })
+    } else {
+        integrationsContainer += `
+            No Data Found
+        `;
+    }
+    return integrationsContainer;
+}
+
 const showInputOutput = (input_output_examples) => {
-    const [firstInputOutput, secondInputOutput] = input_output_examples;
-    let msgContainer = '';
-    if(firstInputOutput.input || secondInputOutput.input){
-        msgContainer += `
-            <div class="card-text">
-                <h4>${firstInputOutput.input || secondInputOutput.input?secondInputOutput.input: 'Can you give any example?'}</h4>
-                <p >${firstInputOutput.output || secondInputOutput.output?secondInputOutput.output:'No! Not Yet! Take a break!!!'}</p>
-            </div>
+    console.log(input_output_examples);
+    let inputOutputContainer = '';
+    if(input_output_examples){
+        inputOutputContainer += `
+            <h4>${input_output_examples[1].input || input_output_examples[0].input}</h4>
+            <p>${input_output_examples[1].output || input_output_examples[0].output}</p>
+        `;
+    } else {
+        inputOutputContainer += `
+            <h4>Can you give any example?</h4>
+            <p>No! Not Yet! Take a break!!!</p>
         `;
     }
-    return msgContainer;
+    return inputOutputContainer;
 }
-
-const showPrices = (pricing) => {
-    console.log(pricing);
-    let pricingPlanContainer = '';
-    for(const package of pricing){
-        console.log(package);
-        pricingPlanContainer += `
-                <div class="bg-light-subtle p-2 rounded text-center fw-bold pricing-plans text-success">
-                    <p>${package.price?package.price:'Free Of Cost'}</p>
-                    <p>${package.plan}</p>
-                </div>
-        `;
-    }
-    return pricingPlanContainer;
-}
-
-
-
 
 const generateModalFeatures = (features) => {
     const featureCollection = Object.values(features);
