@@ -14,7 +14,7 @@ const loadTools = async (num) => {
             displayTools(data.data.tools);
         }
     } catch (error) {
-        console.log(error);
+        return alert('Upps! Something Went Wrong! Please try later.');
     }
 }
 
@@ -89,7 +89,7 @@ const showToolModal = async (toolId) =>{
         const data = await loadToolDetails.json();
         showModal(data.data);
     } catch (error) {
-        console.log(error);
+        return alert('Upps! Something Went Wrong! Please try later.');
     }
 }
 
@@ -228,7 +228,6 @@ const generateModalFeatures = (features) => {
 const sortCard = () =>{
     const supportingTools = []
     sortingTools.forEach((tool) => {
-        console.log(tool.published_in);
         tool.published_in = new Date (tool.published_in);
         supportingTools.push(tool);
 
